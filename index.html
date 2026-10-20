@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Ukur: Panjang & Berat - Matematika Kelas 4 SD/MI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Nunito & Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#4DB6AC',
+                            darkBlue: '#00897B',
+                            yellow: '#FFCA28',
+                            orange: '#FF9800',
+                            pink: '#FF80AB',
+                            purple: '#9C27B0',
+                            green: '#66BB6A',
+                            bgLight: '#F0F9FF',
+                            cardBg: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #E0F2FE;
+            background-image: radial-gradient(#BAE6FD 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        .custom-card-shadow {
+            box-shadow: 0 10px 0px -2px rgba(0, 0, 0, 0.08), 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-bounce {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .btn-bounce:active {
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+
+        .stair-step {
+            transition: all 0.3s ease;
+        }
+        .stair-step:hover {
+            transform: scale(1.05);
+        }
+
+        /* Drag and drop styling */
+        .draggable {
+            cursor: grab;
+            user-select: none;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .dropzone-active {
+            border-color: #FF9800 !important;
+            background-color: #FFF3E0 !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #38BDF8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284C7;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- TOP NAVIGATION BAR (Visible inside app pages) -->
+    <header id="mainNav" class="hidden bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b-4 border-sky-300 px-4 py-3 shadow-md">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('dashboardView')">
+                <div class="bg-amber-400 p-2.5 rounded-2xl text-white shadow-md transform -rotate-3">
+                    <i class="fa-solid fa-ruler-combined text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-sky-800 leading-none">Petualangan Ukur</h1>
+                    <span class="text-xs text-sky-600 font-semibold">Kelas 4 SD/MI</span>
+                </div>
+            </div>
+
+            <!-- Student Profile Summary Header -->
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex flex-col text-right">
+                    <span id="navStudentName" class="font-bold text-slate-700 text-sm">Siswa SD</span>
+                    <span id="navStudentClass" class="text-xs text-slate-500 font-semibold">Kelas 4A</span>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-sky-200 border-2 border-sky-400 flex items-center justify-center text-sky-700 font-bold text-lg shadow">
+                    <i class="fa-solid fa-child-reaching"></i>
+                </div>
+                <button onclick="logout()" title="Keluar / Ganti Nama" class="text-rose-500 hover:text-rose-700 p-2 rounded-xl hover:bg-rose-50 transition">
+                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="max-w-6xl w-full mx-auto p-4 sm:p-6 flex-grow">
+
+        <!-- 1. SPLASH / LOGIN VIEW -->
+        <section id="loginView" class="flex flex-col items-center justify-center py-6 min-h-[85vh]">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 max-w-lg w-full text-center border-4 border-sky-300 custom-card-shadow relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-200 rounded-full blur-xl opacity-60"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-sky-200 rounded-full blur-xl opacity-60"></div>
+
+                <!-- Banner Cartoon Illustration -->
+                <div class="relative z-10 mb-6 flex justify-center items-center gap-4">
+                    <div class="w-20 h-20 bg-amber-400 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg transform -rotate-6 animate-bounce">
+                        📏
+                    </div>
+                    <div class="w-20 h-20 bg-emerald-400 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg transform rotate-6 animate-pulse">
+                        ⚖️
+                    </div>
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-sky-900 mb-2">Petualangan Ukur</h1>
+                <p class="text-sky-600 font-bold mb-6 text-sm sm:text-base">Belajar Pengukuran Panjang & Berat Lebih Seru!</p>
+
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 text-left relative z-10">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Nama Lengkap Siswa:</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-400"></i>
+                            <input type="text" id="inputName" required placeholder="Tulis namamu di sini..." class="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-400 focus:outline-none font-bold text-slate-700 bg-slate-50 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Pilih Kelas:</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-school absolute left-4 top-3.5 text-slate-400"></i>
+                            <select id="inputClass" required class="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-400 focus:outline-none font-bold text-slate-700 bg-slate-50 transition">
+                                <option value="Kelas 4A">Kelas 4A</option>
+                                <option value="Kelas 4B">Kelas 4B</option>
+                                <option value="Kelas 4C">Kelas 4C</option>
+                                <option value="Kelas 4 SD/MI">Kelas 4 SD/MI</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-lg rounded-2xl shadow-[0_6px_0_#059669] active:shadow-none btn-bounce transition mt-4 flex items-center justify-center gap-2">
+                        <span>Mulai Belajar Sekarang</span>
+                        <i class="fa-solid fa-rocket"></i>
+                    </button>
+                </form>
+
+                <p class="text-xs text-slate-400 mt-6">Matematika Kurikulum Merdeka - SD/MI Kelas IV</p>
+            </div>
+        </section>
+
+        <!-- 2. DASHBOARD VIEW -->
+        <section id="dashboardView" class="hidden space-y-6">
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-to-r from-sky-500 to-indigo-500 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 z-10 text-center md:text-left">
+                    <span class="bg-amber-400 text-slate-900 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">Selamat Datang!</span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold" id="welcomeText">Halo, Teman Cerdas! 👋</h2>
+                    <p class="text-sky-100 text-sm sm:text-base max-w-xl">Mari kita berpetualang belajar cara mengukur panjang meja, berat buah, dan melatih kemampuan matematikamumu!</p>
+                </div>
+                <div class="flex gap-3 z-10">
+                    <div class="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-center border border-white/30">
+                        <span class="text-2xl block mb-1">📏</span>
+                        <span class="text-xs font-bold">Panjang</span>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-center border border-white/30">
+                        <span class="text-2xl block mb-1">⚖️</span>
+                        <span class="text-xs font-bold">Berat</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Progress Card -->
+            <div class="bg-white rounded-2xl p-5 border-2 border-sky-200 custom-card-shadow flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800">Progres Belajar Kamu</h4>
+                        <p class="text-xs text-slate-500" id="progressStatusText">Selesaikan aktivitas dan kuis untuk meraih Bintang!</p>
+                    </div>
+                </div>
+                <div class="w-full sm:w-64 space-y-1">
+                    <div class="flex justify-between text-xs font-bold text-slate-600">
+                        <span>Pencapaian:</span>
+                        <span id="progressPercentageText">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden border border-slate-200">
+                        <div id="progressBar" class="bg-amber-400 h-full w-0 transition-all duration-500 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Navigation Menu -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Menu 1: Materi -->
+                <div onclick="navigateTo('materiView')" class="bg-white rounded-3xl p-6 border-4 border-sky-300 hover:border-sky-400 custom-card-shadow hover:-translate-y-1 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+                            📚
+                        </div>
+                        <h3 class="text-xl font-extrabold text-sky-900 mb-2">Materi Belajar</h3>
+                        <p class="text-slate-600 text-sm">Pelajari alat ukur panjang, timbangan, konversi satuan, & pembulatan.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-sky-600 font-bold text-sm">
+                        <span>Mulai Membaca</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Menu 2: Aktivitas -->
+                <div onclick="navigateTo('aktivitasView')" class="bg-white rounded-3xl p-6 border-4 border-emerald-300 hover:border-emerald-400 custom-card-shadow hover:-translate-y-1 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+                            🧩
+                        </div>
+                        <h3 class="text-xl font-extrabold text-emerald-900 mb-2">Aktivitas Interaktif</h3>
+                        <p class="text-slate-600 text-sm">Permainan tarik-lepas, mencocokkan konversi, & membaca skala gambar.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-emerald-600 font-bold text-sm">
+                        <span>Bermain & Berlatih</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Menu 3: Kuis -->
+                <div onclick="navigateTo('kuisView')" class="bg-white rounded-3xl p-6 border-4 border-purple-300 hover:border-purple-400 custom-card-shadow hover:-translate-y-1 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+                            📝
+                        </div>
+                        <h3 class="text-xl font-extrabold text-purple-900 mb-2">Kuis Evaluasi</h3>
+                        <p class="text-slate-600 text-sm">Uji pemahamanmu dengan 10 soal tantangan HOTS & kehidupan nyata.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-purple-600 font-bold text-sm">
+                        <span>Mulai Kuis</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Menu 4: Hasil Belajar -->
+                <div onclick="navigateTo('hasilView')" class="bg-white rounded-3xl p-6 border-4 border-amber-300 hover:border-amber-400 custom-card-shadow hover:-translate-y-1 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+                            🏆
+                        </div>
+                        <h3 class="text-xl font-extrabold text-amber-900 mb-2">Hasil Belajar</h3>
+                        <p class="text-slate-600 text-sm">Lihat nilai kuis, jumlah jawaban benar, serta cetak kartu rapotmu!</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-amber-600 font-bold text-sm">
+                        <span>Lihat Rapor</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Menu 5: Petunjuk -->
+                <div onclick="navigateTo('petunjukView')" class="bg-white rounded-3xl p-6 border-4 border-rose-300 hover:border-rose-400 custom-card-shadow hover:-translate-y-1 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+                            💡
+                        </div>
+                        <h3 class="text-xl font-extrabold text-rose-900 mb-2">Petunjuk Belajar</h3>
+                        <p class="text-slate-600 text-sm">Panduan mudah cara menggunakan website ini agar belajar maksimal.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-rose-600 font-bold text-sm">
+                        <span>Buka Panduan</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Menu 6: Tentang Media -->
+                <div onclick="navigateTo('tentangView')" class="bg-white rounded-3xl p-6 border-4 border-indigo-300 hover:border-indigo-400 custom-card-shadow hover:-translate-y-1 transition cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+                            ℹ️
+                        </div>
+                        <h3 class="text-xl font-extrabold text-indigo-900 mb-2">Tentang Media</h3>
+                        <p class="text-slate-600 text-sm">Informasi pengembang aplikasi dan tujuan capaian pembelajaran.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-indigo-600 font-bold text-sm">
+                        <span>Lihat Info</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MATERI VIEW -->
+        <section id="materiView" class="hidden space-y-6">
+            <!-- Navigation Header -->
+            <div class="flex items-center justify-between">
+                <button onclick="navigateTo('dashboardView')" class="px-4 py-2 bg-white rounded-2xl font-bold text-slate-600 border-2 border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali ke Dashboard</span>
+                </button>
+                <div class="text-right">
+                    <span class="text-xs font-bold text-sky-600 block">Modul Pembelajaran</span>
+                    <h2 class="text-xl font-extrabold text-sky-900">Panjang & Berat</h2>
+                </div>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div class="flex flex-wrap gap-2 border-b-2 border-sky-200 pb-2">
+                <button onclick="switchMateriTab('tabPanjang')" id="btnTabPanjang" class="materi-tab-btn px-5 py-2.5 rounded-2xl font-bold text-sm transition bg-sky-500 text-white shadow-md">
+                    📏 A. Pengukuran Panjang
+                </button>
+                <button onclick="switchMateriTab('tabBerat')" id="btnTabBerat" class="materi-tab-btn px-5 py-2.5 rounded-2xl font-bold text-sm transition bg-white text-slate-600 hover:bg-slate-100">
+                    ⚖️ B. Pengukuran Berat
+                </button>
+                <button onclick="switchMateriTab('tabCerita')" id="btnTabCerita" class="materi-tab-btn px-5 py-2.5 rounded-2xl font-bold text-sm transition bg-white text-slate-600 hover:bg-slate-100">
+                    🛒 C. Penerapan Sehari-Hari
+                </button>
+            </div>
+
+            <!-- MATERI CONTENT SECTION A: PANJANG -->
+            <div id="tabPanjang" class="materi-content space-y-6">
+                <!-- Subcard 1: Alat Ukur -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-sky-200 custom-card-shadow space-y-4">
+                    <div class="flex items-center gap-3 border-b-2 border-sky-100 pb-3">
+                        <span class="bg-sky-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center">1</span>
+                        <h3 class="text-xl font-extrabold text-sky-900">Mengenal Alat Ukur Panjang Baku</h3>
+                    </div>
+                    <p class="text-slate-700 leading-relaxed">
+                        Di kelas 4, kita belajar mengukur benda menggunakan **alat ukur baku** agar hasil ukurnya selalu tepat dan sama bagi siapa saja!
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-sky-50 rounded-2xl p-4 border-2 border-sky-200 flex flex-col items-center text-center">
+                            <div class="text-4xl mb-2">📏</div>
+                            <h4 class="font-bold text-sky-900">Penggaris</h4>
+                            <p class="text-xs text-slate-600 mt-1">Menggunakan satuan **sentimeter (cm)**. Digunakan untuk benda pendek seperti pensil, buku, dan penghapus.</p>
+                        </div>
+                        <div class="bg-sky-50 rounded-2xl p-4 border-2 border-sky-200 flex flex-col items-center text-center">
+                            <div class="text-4xl mb-2">🛠️</div>
+                            <h4 class="font-bold text-sky-900">Meteran Saku / Rol</h4>
+                            <p class="text-xs text-slate-600 mt-1">Digunakan untuk mengukur panjang meja, pintu, atau ruangan hingga kurang dari 10 meter.</p>
+                        </div>
+                        <div class="bg-sky-50 rounded-2xl p-4 border-2 border-sky-200 flex flex-col items-center text-center">
+                            <div class="text-4xl mb-2">🧵</div>
+                            <h4 class="font-bold text-sky-900">Meteran Kain / Pita</h4>
+                            <p class="text-xs text-slate-600 mt-1">Sering digunakan oleh penjahit untuk mengukur lingkar badan atau panjang kain yang melengkung.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subcard 2: Tangga Satuan Panjang -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-amber-200 custom-card-shadow space-y-4">
+                    <div class="flex items-center gap-3 border-b-2 border-amber-100 pb-3">
+                        <span class="bg-amber-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center">2</span>
+                        <h3 class="text-xl font-extrabold text-amber-900">Hubungan Antarsatuan Panjang (m dan cm)</h3>
+                    </div>
+                    <p class="text-slate-700">
+                        Tangga satuan panjang terdiri dari **km, hm, dam, m, dm, cm, mm**. Namun, fokus utama kelas 4 adalah hubungan antara **Meter (m)** dan **Sentimeter (cm)**.
+                    </p>
+
+                    <!-- Interactive Ladder Visual -->
+                    <div class="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200">
+                        <div class="flex flex-wrap justify-center items-end gap-2 py-4">
+                            <div class="stair-step bg-amber-300 p-2 rounded-t-lg text-center font-bold text-xs w-16">km</div>
+                            <div class="stair-step bg-amber-300 p-2 rounded-t-lg text-center font-bold text-xs w-16">hm</div>
+                            <div class="stair-step bg-amber-300 p-2 rounded-t-lg text-center font-bold text-xs w-16">dam</div>
+                            <div class="stair-step bg-amber-500 text-white p-3 rounded-t-lg text-center font-bold text-sm w-20 shadow-md">m (Meter)</div>
+                            <div class="stair-step bg-amber-300 p-2 rounded-t-lg text-center font-bold text-xs w-16">dm</div>
+                            <div class="stair-step bg-amber-500 text-white p-3 rounded-t-lg text-center font-bold text-sm w-20 shadow-md">cm (cm)</div>
+                            <div class="stair-step bg-amber-300 p-2 rounded-t-lg text-center font-bold text-xs w-16">mm</div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-bold text-amber-900 mt-2 bg-white p-3 rounded-xl">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-emerald-400 text-white p-1 rounded">⬇️ Turun 1 Tingkat</span>
+                                <span>Dikali 10 (× 10)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-rose-400 text-white p-1 rounded">⬆️ Naik 1 Tingkat</span>
+                                <span>Dibagi 10 (: 10)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formula Box -->
+                    <div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 text-emerald-900 font-bold space-y-2">
+                        <p class="text-center text-lg">💡 Rumus Utama Konversi:</p>
+                        <div class="flex justify-around text-base">
+                            <span>1 Meter (m) = 100 Sentimeter (cm)</span>
+                            <span>|</span>
+                            <span>1 cm = <sup>1</sup>/<sub>100</sub> Meter</span>
+                        </div>
+                        <p class="text-xs text-center font-normal text-emerald-700">Contoh: 3 m = 3 × 100 = 300 cm. Sebaliknya, 500 cm = 500 : 100 = 5 m.</p>
+                    </div>
+                </div>
+
+                <!-- Subcard 3: Pembulatan Panjang -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-emerald-200 custom-card-shadow space-y-4">
+                    <div class="flex items-center gap-3 border-b-2 border-emerald-100 pb-3">
+                        <span class="bg-emerald-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center">3</span>
+                        <h3 class="text-xl font-extrabold text-emerald-900">Pembulatan Hasil Pengukuran Panjang</h3>
+                    </div>
+                    <p class="text-slate-700">
+                        Kadang-kadang saat mengukur pensil, ukurannya tidak pas di angka cm. Kita harus membulatkannya ke sentimeter terdekat!
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4">
+                            <h4 class="font-bold text-rose-800 mb-1">⬇️ Aturan Bulat ke Bawah</h4>
+                            <p class="text-xs text-slate-600">Jika kelebihan milimeter **kurang dari 5 (1, 2, 3, 4)**, maka dibulatkan ke **bawah** (angkanya tetap).</p>
+                            <div class="mt-2 text-xs font-bold bg-white p-2 rounded-xl text-rose-700">
+                                Contoh: Pensil 8,3 cm ➔ dibulatkan jadi 8 cm.
+                            </div>
+                        </div>
+                        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4">
+                            <h4 class="font-bold text-emerald-800 mb-1">⬆️ Aturan Bulat ke Atas</h4>
+                            <p class="text-xs text-slate-600">Jika kelebihan milimeter **sama dengan atau lebih dari 5 (5, 6, 7, 8, 9)**, dibulatkan ke **atas** (+1 cm).</p>
+                            <div class="mt-2 text-xs font-bold bg-white p-2 rounded-xl text-emerald-700">
+                                Contoh: Penghapus 4,7 cm ➔ dibulatkan jadi 5 cm.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MATERI CONTENT SECTION B: BERAT -->
+            <div id="tabBerat" class="materi-content hidden space-y-6">
+                <!-- Subcard 1: Alat Ukur Berat -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-purple-200 custom-card-shadow space-y-4">
+                    <div class="flex items-center gap-3 border-b-2 border-purple-100 pb-3">
+                        <span class="bg-purple-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center">1</span>
+                        <h3 class="text-xl font-extrabold text-purple-900">Mengenal Alat Ukur Berat (Timbangan)</h3>
+                    </div>
+                    <p class="text-slate-700">
+                        Untuk mengetahui berat suatu benda atau badan, kita menggunakan berbagai jenis **timbangan** sesuai kebutuhan:
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-purple-50 rounded-2xl p-4 border-2 border-purple-200 text-center">
+                            <div class="text-3xl mb-1">🧘</div>
+                            <h4 class="font-bold text-purple-900 text-sm">Timbangan Badan</h4>
+                            <p class="text-xs text-slate-600 mt-1">Mengukur berat badan manusia (dalam kg).</p>
+                        </div>
+                        <div class="bg-purple-50 rounded-2xl p-4 border-2 border-purple-200 text-center">
+                            <div class="text-3xl mb-1">🦆</div>
+                            <h4 class="font-bold text-purple-900 text-sm">Timbangan Pasar / Bebek</h4>
+                            <p class="text-xs text-slate-600 mt-1">Dipakai di pasar untuk menimbang telur, gula, dan sayur.</p>
+                        </div>
+                        <div class="bg-purple-50 rounded-2xl p-4 border-2 border-purple-200 text-center">
+                            <div class="text-3xl mb-1">🔢</div>
+                            <h4 class="font-bold text-purple-900 text-sm">Timbangan Digital</h4>
+                            <p class="text-xs text-slate-600 mt-1">Menampilkan angka langsung di layar. Sangat teliti!</p>
+                        </div>
+                        <div class="bg-purple-50 rounded-2xl p-4 border-2 border-purple-200 text-center">
+                            <div class="text-3xl mb-1">🎂</div>
+                            <h4 class="font-bold text-purple-900 text-sm">Timbangan Kue</h4>
+                            <p class="text-xs text-slate-600 mt-1">Menimbang bahan kue dalam gram seperti tepung & mentega.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subcard 2: Satuan Berat -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-indigo-200 custom-card-shadow space-y-4">
+                    <div class="flex items-center gap-3 border-b-2 border-indigo-100 pb-3">
+                        <span class="bg-indigo-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center">2</span>
+                        <h3 class="text-xl font-extrabold text-indigo-900">Hubungan Antarsatuan Berat (kg, g, Ons, Pon)</h3>
+                    </div>
+                    <p class="text-slate-700">
+                        Satuan baku berat utama adalah **Kilogram (kg)** dan **Gram (g)**. Selain itu, masyarakat sering menggunakan satuan popular seperti **ons** dan **pon**.
+                    </p>
+
+                    <div class="bg-indigo-50 border-2 border-indigo-300 rounded-2xl p-5 space-y-3">
+                        <h4 class="font-bold text-indigo-900 text-center text-lg">📌 Hubungan Penting Satuan Berat:</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-sm font-bold text-slate-700">
+                            <div class="bg-white p-3 rounded-xl border border-indigo-200 text-center shadow-sm">
+                                🏋️ 1 kg = 1.000 gram (g)
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-200 text-center shadow-sm">
+                                🍊 1 kg = 10 Ons
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-200 text-center shadow-sm">
+                                ⚖️ 1 Ons = 100 gram (g)
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-200 text-center shadow-sm">
+                                🥖 1 kg = 2 Pon
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-200 text-center shadow-sm">
+                                🍞 1 Pon = 500 gram (g)
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-200 text-center shadow-sm">
+                                💡 1 Ons = 1 hg (Hektogram)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subcard 3: Pembulatan Berat -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-rose-200 custom-card-shadow space-y-4">
+                    <div class="flex items-center gap-3 border-b-2 border-rose-100 pb-3">
+                        <span class="bg-rose-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center">3</span>
+                        <h3 class="text-xl font-extrabold text-rose-900">Pembulatan Hasil Pengukuran Berat</h3>
+                    </div>
+                    <p class="text-slate-700">
+                        Aturan pembulatan berat ke kg terdekat sama dengan pembulatan matematika standar:
+                    </p>
+                    <div class="bg-rose-50 rounded-2xl p-4 border border-rose-200 space-y-2 text-sm text-rose-900 font-semibold">
+                        <p>• Berat semangka **3,2 kg** ➔ Angka dibelakang koma (2) < 5 ➔ Dibulatkan jadi **3 kg**.</p>
+                        <p>• Berat melon **2,6 kg** ➔ Angka dibelakang koma (6) ≥ 5 ➔ Dibulatkan jadi **3 kg**.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MATERI CONTENT SECTION C: SOAL CERITA -->
+            <div id="tabCerita" class="materi-content hidden space-y-6">
+                <div class="bg-white rounded-3xl p-6 border-4 border-amber-300 custom-card-shadow space-y-4">
+                    <div class="flex items-center gap-3 border-b-2 border-amber-100 pb-3">
+                        <span class="bg-amber-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center">🛒</span>
+                        <h3 class="text-xl font-extrabold text-amber-900">Penerapan Sehari-Hari & Soal Cerita</h3>
+                    </div>
+
+                    <p class="text-slate-700">
+                        Dalam kehidupan sehari-hari, kita sering menjumlahkan belanjaan yang satuannya berbeda. Kuncinya: **Samakan dulu satuannya!**
+                    </p>
+
+                    <div class="bg-amber-50 rounded-2xl p-5 border-2 border-amber-200 space-y-3">
+                        <h4 class="font-bold text-amber-900 text-base">✏️ Contoh Kasus Belanja Ibu:</h4>
+                        <p class="text-sm text-slate-700 italic">
+                            "Ibu membeli 2 kg gula pasir dan 500 gram tepung terigu. Berapa **gram** total belanjaan Ibu seluruhnya?"
+                        </p>
+
+                        <div class="bg-white p-4 rounded-xl border border-amber-300 space-y-2 text-sm font-bold text-slate-800">
+                            <p class="text-sky-700">💡 Langkah Pemecahan:</p>
+                            <p>1. Ubah 2 kg menjadi gram: <span class="text-emerald-600">2 kg = 2 × 1.000 g = 2.000 g</span></p>
+                            <p>2. Tepung terigu sudah dalam gram = <span class="text-emerald-600">500 g</span></p>
+                            <p>3. Jumlahkan keduanya: <span class="text-amber-600">2.000 g + 500 g = 2.500 gram</span></p>
+                            <div class="p-2 bg-emerald-100 text-emerald-800 rounded-lg text-center mt-2">
+                                Jadi, total belanjaan Ibu adalah 2.500 gram (atau 2,5 kg). 🎉
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. AKTIVITAS BELAJAR VIEW -->
+        <section id="aktivitasView" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="navigateTo('dashboardView')" class="px-4 py-2 bg-white rounded-2xl font-bold text-slate-600 border-2 border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </button>
+                <div class="text-right">
+                    <span class="text-xs font-bold text-emerald-600 block">Zona Bermain</span>
+                    <h2 class="text-xl font-extrabold text-emerald-900">Aktivitas Interaktif</h2>
+                </div>
+            </div>
+
+            <!-- Mini Game Selector Tabs -->
+            <div class="flex flex-wrap gap-2 border-b-2 border-emerald-200 pb-2">
+                <button onclick="switchActTab('act1')" id="btnAct1" class="act-tab-btn px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm bg-emerald-500 text-white shadow-md">
+                    1. Keranjang Alat Ukur
+                </button>
+                <button onclick="switchActTab('act2')" id="btnAct2" class="act-tab-btn px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm bg-white text-slate-600 hover:bg-slate-100">
+                    2. Jodohkan Satuan
+                </button>
+                <button onclick="switchActTab('act3')" id="btnAct3" class="act-tab-btn px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm bg-white text-slate-600 hover:bg-slate-100">
+                    3. Baca Skala Gambar
+                </button>
+                <button onclick="switchActTab('act4')" id="btnAct4" class="act-tab-btn px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm bg-white text-slate-600 hover:bg-slate-100">
+                    4. Konversi Cerita
+                </button>
+                <button onclick="switchActTab('act5')" id="btnAct5" class="act-tab-btn px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm bg-white text-slate-600 hover:bg-slate-100">
+                    5. Ayo Berpikir!
+                </button>
+            </div>
+
+            <!-- AKTIVITAS 1: DRAG AND DROP / CATEGORIZATION -->
+            <div id="act1" class="act-content space-y-4">
+                <div class="bg-white rounded-3xl p-6 border-4 border-emerald-200 custom-card-shadow">
+                    <h3 class="text-lg font-extrabold text-emerald-900 mb-1">🛒 Aktivitas 1: Kelompokkan Benda ke Keranjang yang Tepat!</h3>
+                    <p class="text-xs text-slate-600 mb-4">Klik/Pilih benda di bawah ini, lalu tentukan apakah diukur dengan **Penggaris/Meteran** atau **Timbangan**!</p>
+
+                    <!-- Items Container -->
+                    <div id="dragItemsContainer" class="flex flex-wrap gap-3 mb-6 p-4 bg-emerald-50 rounded-2xl border-2 border-dashed border-emerald-300 justify-center">
+                        <button onclick="selectDragItem(this, 'panjang')" class="draggable-item bg-white px-4 py-2.5 rounded-2xl border-2 border-emerald-400 font-bold text-sm text-slate-700 shadow-sm hover:scale-105 transition flex items-center gap-2">
+                            <span>✏️ Panjang Pensil</span>
+                        </button>
+                        <button onclick="selectDragItem(this, 'berat')" class="draggable-item bg-white px-4 py-2.5 rounded-2xl border-2 border-emerald-400 font-bold text-sm text-slate-700 shadow-sm hover:scale-105 transition flex items-center gap-2">
+                            <span>🍉 Berat Semangka</span>
+                        </button>
+                        <button onclick="selectDragItem(this, 'panjang')" class="draggable-item bg-white px-4 py-2.5 rounded-2xl border-2 border-emerald-400 font-bold text-sm text-slate-700 shadow-sm hover:scale-105 transition flex items-center gap-2">
+                            <span>🚪 Tinggi Pintu</span>
+                        </button>
+                        <button onclick="selectDragItem(this, 'berat')" class="draggable-item bg-white px-4 py-2.5 rounded-2xl border-2 border-emerald-400 font-bold text-sm text-slate-700 shadow-sm hover:scale-105 transition flex items-center gap-2">
+                            <span>🌾 Sekarung Beras</span>
+                        </button>
+                    </div>
+
+                    <!-- Drop Zone Baskets -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div onclick="dropToBasket('panjang')" class="basket-zone bg-sky-50 border-4 border-sky-300 rounded-3xl p-6 text-center cursor-pointer hover:bg-sky-100 transition min-h-[160px] flex flex-col items-center justify-center">
+                            <div class="text-4xl mb-2">📏</div>
+                            <h4 class="font-extrabold text-sky-900 text-lg">Keranjang Alat Ukur Panjang</h4>
+                            <p class="text-xs text-sky-600">(Penggaris / Meteran)</p>
+                            <div id="basketPanjangItems" class="mt-3 flex flex-wrap gap-2 justify-center"></div>
+                        </div>
+
+                        <div onclick="dropToBasket('berat')" class="basket-zone bg-purple-50 border-4 border-purple-300 rounded-3xl p-6 text-center cursor-pointer hover:bg-purple-100 transition min-h-[160px] flex flex-col items-center justify-center">
+                            <div class="text-4xl mb-2">⚖️</div>
+                            <h4 class="font-extrabold text-purple-900 text-lg">Keranjang Alat Ukur Berat</h4>
+                            <p class="text-xs text-purple-600">(Timbangan)</p>
+                            <div id="basketBeratItems" class="mt-3 flex flex-wrap gap-2 justify-center"></div>
+                        </div>
+                    </div>
+
+                    <div id="act1Feedback" class="mt-4 p-3 rounded-2xl font-bold text-center text-sm hidden"></div>
+                </div>
+            </div>
+
+            <!-- AKTIVITAS 2: MATCHING CONVERSION -->
+            <div id="act2" class="act-content hidden space-y-4">
+                <div class="bg-white rounded-3xl p-6 border-4 border-emerald-200 custom-card-shadow">
+                    <h3 class="text-lg font-extrabold text-emerald-900 mb-1">🔗 Aktivitas 2: Mencocokkan Pasangan Satuan yang Sama!</h3>
+                    <p class="text-xs text-slate-600 mb-4">Klik 1 kotak di sebelah Kiri, lalu klik kotak Pasangannya di sebelah Kanan!</p>
+
+                    <div class="grid grid-cols-2 gap-4 max-w-lg mx-auto">
+                        <!-- Left Column -->
+                        <div class="space-y-3">
+                            <button onclick="selectMatchLeft(this, '2m')" class="match-left w-full py-3 px-4 bg-amber-50 border-2 border-amber-300 rounded-2xl font-bold text-amber-900 text-sm hover:bg-amber-100 transition">
+                                2 Meter (m)
+                            </button>
+                            <button onclick="selectMatchLeft(this, '1kg')" class="match-left w-full py-3 px-4 bg-amber-50 border-2 border-amber-300 rounded-2xl font-bold text-amber-900 text-sm hover:bg-amber-100 transition">
+                                1 Kilogram (kg)
+                            </button>
+                            <button onclick="selectMatchLeft(this, '1ons')" class="match-left w-full py-3 px-4 bg-amber-50 border-2 border-amber-300 rounded-2xl font-bold text-amber-900 text-sm hover:bg-amber-100 transition">
+                                1 Ons
+                            </button>
+                        </div>
+                        <!-- Right Column -->
+                        <div class="space-y-3">
+                            <button onclick="selectMatchRight(this, '1ons')" class="match-right w-full py-3 px-4 bg-sky-50 border-2 border-sky-300 rounded-2xl font-bold text-sky-900 text-sm hover:bg-sky-100 transition">
+                                100 Gram
+                            </button>
+                            <button onclick="selectMatchRight(this, '2m')" class="match-right w-full py-3 px-4 bg-sky-50 border-2 border-sky-300 rounded-2xl font-bold text-sky-900 text-sm hover:bg-sky-100 transition">
+                                200 cm
+                            </button>
+                            <button onclick="selectMatchRight(this, '1kg')" class="match-right w-full py-3 px-4 bg-sky-50 border-2 border-sky-300 rounded-2xl font-bold text-sky-900 text-sm hover:bg-sky-100 transition">
+                                1.000 Gram
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="act2Feedback" class="mt-4 p-3 rounded-2xl font-bold text-center text-sm hidden"></div>
+                </div>
+            </div>
+
+            <!-- AKTIVITAS 3: MEMBACA SKALA GAMBAR -->
+            <div id="act3" class="act-content hidden space-y-4">
+                <div class="bg-white rounded-3xl p-6 border-4 border-emerald-200 custom-card-shadow space-y-4">
+                    <h3 class="text-lg font-extrabold text-emerald-900">🔍 Aktivitas 3: Membaca Skala Gambar</h3>
+
+                    <!-- Question Visual -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border-2 border-slate-200 flex flex-col items-center text-center space-y-3">
+                        <p class="font-bold text-slate-800 text-sm">Berapa panjang pensil pada gambar penggaris di bawah ini?</p>
+                        
+                        <!-- SVG Ruler Illustration -->
+                        <div class="w-full max-w-md bg-amber-100 border-2 border-amber-400 p-4 rounded-xl relative overflow-x-auto">
+                            <!-- Pencil SVG -->
+                            <div class="flex items-center ml-0 mb-1">
+                                <div class="h-6 bg-amber-500 rounded-l-md" style="width: 180px;"></div>
+                                <div class="w-0 h-0 border-y-8 border-y-transparent border-l-[16px] border-l-amber-700"></div>
+                            </div>
+                            <!-- Ruler Scale Lines -->
+                            <div class="border-t-2 border-slate-800 flex justify-between pt-1 font-mono text-xs font-bold text-slate-800">
+                                <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <button onclick="checkAct3('5 cm', this)" class="act3-opt py-3 px-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700">5 cm</button>
+                        <button onclick="checkAct3('6 cm', this)" class="act3-opt py-3 px-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700">6 cm</button>
+                        <button onclick="checkAct3('7 cm', this)" class="act3-opt py-3 px-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700">7 cm</button>
+                        <button onclick="checkAct3('4 cm', this)" class="act3-opt py-3 px-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700">4 cm</button>
+                    </div>
+
+                    <div id="act3Feedback" class="p-3 rounded-2xl font-bold text-center text-sm hidden"></div>
+                </div>
+            </div>
+
+            <!-- AKTIVITAS 4: KONVERSI CERITA -->
+            <div id="act4" class="act-content hidden space-y-4">
+                <div class="bg-white rounded-3xl p-6 border-4 border-emerald-200 custom-card-shadow space-y-4">
+                    <h3 class="text-lg font-extrabold text-emerald-900">🛍️ Aktivitas 4: Menentukan Hasil Konversi Cerita</h3>
+
+                    <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200 text-slate-800 text-sm font-semibold">
+                        "Ibu membeli <span class="text-emerald-700 font-extrabold">3 kg</span> gula pasir dan <span class="text-emerald-700 font-extrabold">500 gram</span> tepung terigu. Berapa gram total berat belanjaan Ibu seluruhnya?"
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="checkAct4('800 gram', this)" class="act4-opt p-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700 text-sm">800 Gram</button>
+                        <button onclick="checkAct4('3.500 gram', this)" class="act4-opt p-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700 text-sm">3.500 Gram</button>
+                        <button onclick="checkAct4('350 gram', this)" class="act4-opt p-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700 text-sm">350 Gram</button>
+                    </div>
+
+                    <div id="act4Feedback" class="p-3 rounded-2xl font-bold text-center text-sm hidden"></div>
+                </div>
+            </div>
+
+            <!-- AKTIVITAS 5: AYO BERPIKIR -->
+            <div id="act5" class="act-content hidden space-y-4">
+                <div class="bg-white rounded-3xl p-6 border-4 border-emerald-200 custom-card-shadow space-y-4">
+                    <h3 class="text-lg font-extrabold text-emerald-900">🤔 Aktivitas 5: Ayo Berpikir (Pemilihan Alat Ukur)</h3>
+
+                    <div class="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 text-slate-800 text-sm font-semibold">
+                        "Siti ingin mengukur panjang keliling meja belajarnya yang panjang. Alat ukur manakah yang paling tepat digunakan antara penggaris plastik 30 cm atau meteran saku?"
+                    </div>
+
+                    <div class="space-y-3">
+                        <button onclick="checkAct5(false, this)" class="act5-opt w-full text-left p-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700 text-xs sm:text-sm">
+                            A. Penggaris plastik 30 cm, karena lebih ringan disimpan di tempat pensil.
+                        </button>
+                        <button onclick="checkAct5(true, this)" class="act5-opt w-full text-left p-4 bg-slate-100 hover:bg-emerald-100 border-2 border-slate-300 rounded-2xl font-bold text-slate-700 text-xs sm:text-sm">
+                            B. Meteran saku / rol kecil, karena bentuknya panjang dan lentur sehingga lebih mudah untuk mengukur meja dalam sekali ukur.
+                        </button>
+                    </div>
+
+                    <div id="act5Feedback" class="p-3 rounded-2xl font-bold text-center text-sm hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. KUIS EVALUASI VIEW -->
+        <section id="kuisView" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="navigateTo('dashboardView')" class="px-4 py-2 bg-white rounded-2xl font-bold text-slate-600 border-2 border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </button>
+                <div class="text-right">
+                    <span class="text-xs font-bold text-purple-600 block">Evaluasi Pemahaman</span>
+                    <h2 class="text-xl font-extrabold text-purple-900">Kuis Evaluasi</h2>
+                </div>
+            </div>
+
+            <!-- Quiz Main Card -->
+            <div class="bg-white rounded-3xl p-6 border-4 border-purple-300 custom-card-shadow space-y-6">
+                <!-- Quiz Header Info -->
+                <div class="flex flex-wrap justify-between items-center gap-2 border-b-2 border-purple-100 pb-4">
+                    <div class="flex items-center gap-2">
+                        <span id="quizQuestionBadge" class="bg-purple-600 text-white font-extrabold px-3 py-1 rounded-xl text-sm">Soal 1 / 10</span>
+                    </div>
+                    <div class="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200">
+                        Pilih 1 Jawaban Terbaik!
+                    </div>
+                </div>
+
+                <!-- Question Title -->
+                <h3 id="quizQuestionText" class="text-lg font-bold text-slate-800 leading-relaxed">
+                    Loading soal...
+                </h3>
+
+                <!-- Question Image (Optional) -->
+                <div id="quizImageContainer" class="hidden flex justify-center py-2">
+                    <div id="quizImageContent" class="p-4 bg-slate-100 border-2 border-slate-300 rounded-2xl"></div>
+                </div>
+
+                <!-- Answer Options Grid -->
+                <div id="quizOptionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Options populated via JS -->
+                </div>
+
+                <!-- Quiz Bottom Nav Buttons -->
+                <div class="flex justify-between items-center pt-4 border-t-2 border-slate-100">
+                    <button id="btnPrevQuiz" onclick="prevQuizQuestion()" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl text-sm transition">
+                        ⬅️ Sebelumnya
+                    </button>
+                    <button id="btnNextQuiz" onclick="nextQuizQuestion()" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-2xl text-sm shadow-[0_4px_0_#7E22CE] btn-bounce transition">
+                        Berikutnya ➡️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. HASIL BELAJAR VIEW -->
+        <section id="hasilView" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="navigateTo('dashboardView')" class="px-4 py-2 bg-white rounded-2xl font-bold text-slate-600 border-2 border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Dashboard</span>
+                </button>
+                <h2 class="text-xl font-extrabold text-amber-900">Rapor Hasil Belajar</h2>
+            </div>
+
+            <!-- Report Card Container -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-amber-300 custom-card-shadow max-w-2xl mx-auto space-y-6 text-center">
+                <!-- Stars Header -->
+                <div id="resultStars" class="flex justify-center gap-2 text-4xl">
+                    <span>⭐</span><span>⭐</span><span>⭐</span>
+                </div>
+
+                <h3 id="resultTitle" class="text-2xl font-extrabold text-slate-800">Luar Biasa, Teman Cerdas! 🎉</h3>
+
+                <!-- Score Big Circle -->
+                <div class="w-32 h-32 mx-auto bg-amber-100 border-4 border-amber-400 rounded-full flex flex-col items-center justify-center text-amber-900 shadow-inner">
+                    <span class="text-xs font-bold uppercase tracking-wider">Nilai Kamu</span>
+                    <span id="resultScore" class="text-4xl font-extrabold">0</span>
+                </div>
+
+                <!-- Student Info Table -->
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 grid grid-cols-2 gap-3 text-sm font-bold text-slate-700">
+                    <div class="text-left">Nama Siswa: <span id="resStudentName" class="text-sky-600 font-extrabold block">--</span></div>
+                    <div class="text-left">Kelas: <span id="resStudentClass" class="text-sky-600 font-extrabold block">--</span></div>
+                    <div class="text-left">Jawaban Benar: <span id="resCorrectCount" class="text-emerald-600 block">0 / 10</span></div>
+                    <div class="text-left">Status: <span id="resStatus" class="text-purple-600 block">Belum Kuis</span></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="navigateTo('kuisView')" class="px-5 py-3 bg-purple-500 hover:bg-purple-600 text-white font-extrabold rounded-2xl shadow-md transition">
+                        🔄 Ulangi Kuis
+                    </button>
+                    <button onclick="toggleDiscussionModal()" class="px-5 py-3 bg-sky-500 hover:bg-sky-600 text-white font-extrabold rounded-2xl shadow-md transition">
+                        📖 Lihat Pembahasan Soal
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. PETUNJUK VIEW -->
+        <section id="petunjukView" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="navigateTo('dashboardView')" class="px-4 py-2 bg-white rounded-2xl font-bold text-slate-600 border-2 border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </button>
+                <h2 class="text-xl font-extrabold text-rose-900">Petunjuk Penggunaan</h2>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border-4 border-rose-300 custom-card-shadow space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-200">
+                        <span class="text-2xl font-black text-rose-500 block mb-1">1. Nama & Kelas</span>
+                        <p class="text-xs text-slate-600">Isi nama lengkapmu pada halaman awal untuk membuka seluruh menu belajar.</p>
+                    </div>
+                    <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200">
+                        <span class="text-2xl font-black text-sky-500 block mb-1">2. Baca Materi</span>
+                        <p class="text-xs text-slate-600">Pelajari penjelasan lengkap tentang alat ukur, konversi m & cm, kg & gram pada menu Materi.</p>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200">
+                        <span class="text-2xl font-black text-emerald-500 block mb-1">3. Bermain Aktivitas</span>
+                        <p class="text-xs text-slate-600">Cobalah mini games mengelompokkan benda dan mencocokkan konversi untuk melatih ingatan.</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-200">
+                        <span class="text-2xl font-black text-purple-500 block mb-1">4. Kerjakan Kuis</span>
+                        <p class="text-xs text-slate-600">Selesaikan 10 soal evaluasi untuk mendapatkan nilai rapor dan bintang penghargaan.</p>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200">
+                        <span class="text-2xl font-black text-amber-500 block mb-1">5. Rapor Belajar</span>
+                        <p class="text-xs text-slate-600">Cek hasil nilaimu dan pelajari pembahasan soal agar makin paham!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. TENTANG MEDIA VIEW -->
+        <section id="tentangView" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="navigateTo('dashboardView')" class="px-4 py-2 bg-white rounded-2xl font-bold text-slate-600 border-2 border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </button>
+                <h2 class="text-xl font-extrabold text-indigo-900">Tentang Media</h2>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-indigo-300 custom-card-shadow space-y-6">
+                <div class="space-y-2">
+                    <h3 class="text-2xl font-extrabold text-indigo-900">Petualangan Ukur: Panjang & Berat</h3>
+                    <p class="text-sm text-slate-600">Media Pembelajaran Interaktif Matematika SD/MI Kelas IV</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-200 space-y-2">
+                        <h4 class="font-extrabold text-indigo-900">🎯 Sasaran Pengguna:</h4>
+                        <p class="text-xs text-slate-700">• Siswa Kelas IV SD/MI (Usia 9–10 tahun)</p>
+                        <p class="text-xs text-slate-700">• Guru Matematika / Orang Tua Pembimbing</p>
+                    </div>
+
+                    <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-200 space-y-2">
+                        <h4 class="font-extrabold text-indigo-900">💡 Tujuan Pembelajaran:</h4>
+                        <p class="text-xs text-slate-700">• Menggunakan alat ukur panjang & berat baku secara tepat.</p>
+                        <p class="text-xs text-slate-700">• Memahami konversi m ↔ cm, kg ↔ gram, ons, pon.</p>
+                        <p class="text-xs text-slate-700">• Melakukan pembulatan pengukuran & pemecahan soal cerita.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- DISCUSSION MODAL -->
+    <div id="discussionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 max-h-[85vh] overflow-y-auto space-y-4 border-4 border-sky-300">
+            <div class="flex justify-between items-center border-b-2 border-slate-100 pb-3">
+                <h3 class="text-xl font-extrabold text-sky-900">📖 Pembahasan Soal Kuis</h3>
+                <button onclick="toggleDiscussionModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+            </div>
+
+            <div id="discussionContent" class="space-y-4">
+                <!-- Discussion items inserted via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t-2 border-sky-200 py-4 px-6 text-center text-xs text-slate-500 font-semibold">
+        <p>© 2026 Petualangan Ukur - Matematika Kelas IV SD/MI. Edukatif, Interaktif & Ramah Anak.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // GLOBAL APP STATE
+        let currentUser = { name: '', class: '' };
+        let userProgress = 0; // 0 - 100%
+
+        // QUIZ DATA (10 HOTS & Contextual Questions)
+        const quizData = [
+            {
+                q: "1. Siti mengukur panjang pensil menggunakan penggaris. Ujung pensil menunjukkan angka 8 cm lebih 3 mm (8,3 cm). Berapakah hasil pembulatan panjang pensil tersebut ke sentimeter terdekat?",
+                options: ["8 cm", "9 cm", "10 cm", "83 cm"],
+                correct: 0,
+                explanation: "Aturan pembulatan: Karena angka di belakang koma adalah 3 (kurang dari 5), maka dibulatkan ke bawah menjadi 8 cm."
+            },
+            {
+                q: "2. Budi ingin mengukur panjang keliling meja belajarnya yang cukup panjang. Alat ukur manakah yang paling tepat digunakan?",
+                options: ["Penggaris plastik 15 cm", "Meteran saku / rol kecil", "Timbangan badan", "Timbangan kue"],
+                correct: 1,
+                explanation: "Meteran saku/rol kecil sangat cocok untuk mengukur benda yang panjang seperti meja atau pintu."
+            },
+            {
+                q: "3. Ibu membeli pita sepanjang 3 meter untuk membuat kerajinan. Berapa sentimeter (cm) panjang pita Ibu seluruhnya?",
+                options: ["30 cm", "300 cm", "3.000 cm", "300.000 cm"],
+                correct: 1,
+                explanation: "1 meter = 100 cm. Jadi, 3 m = 3 × 100 = 300 cm."
+            },
+            {
+                q: "4. Sebuah papan kayu memiliki panjang 450 cm. Jika diubah ke dalam satuan meter (m), panjang papan kayu tersebut adalah...",
+                options: ["45 meter", "4,5 meter", "450 meter", "0,45 meter"],
+                correct: 1,
+                explanation: "1 cm = 1/100 m. Maka 450 : 100 = 4,5 meter."
+            },
+            {
+                q: "5. Pedagang buah di pasar menimbang 1 buah semangka besar. Alat timbangan yang paling sering digunakan pedagang pasar adalah...",
+                options: ["Timbangan pasar / bebek", "Timbangan kain", "Penggaris besi", "Meteran pita"],
+                correct: 0,
+                explanation: "Timbangan pasar/bebek biasa digunakan di pasar tradisional untuk menimbang buah, sayur, dan telur."
+            },
+            {
+                q: "6. Ibu membeli 2 kg gula pasir dan 10 ons tepung terigu. Hubungan antara kg dan ons adalah 1 kg = 10 ons. Berapa kg total berat belanjaan Ibu?",
+                options: ["2 kg", "3 kg", "12 kg", "20 kg"],
+                correct: 1,
+                explanation: "10 ons = 1 kg. Total belanjaan = 2 kg + 1 kg = 3 kg."
+            },
+            {
+                q: "7. Ani menimbang berat badan adiknya. Jarum timbangan menunjukkan 14,8 kg. Hasil pembulatan berat badan adik ke kilogram terdekat adalah...",
+                options: ["14 kg", "15 kg", "16 kg", "148 kg"],
+                correct: 1,
+                explanation: "Angka di belakang koma adalah 8 (lebih dari atau sama dengan 5), maka dibulatkan ke atas (+1) menjadi 15 kg."
+            },
+            {
+                q: "8. Satu bungkus biskuit memiliki berat 250 gram. Jika Ibu membeli 4 bungkus biskuit, berapa kilogram (kg) total berat biskuit tersebut?",
+                options: ["1 kg", "2 kg", "1.000 kg", "2.500 kg"],
+                correct: 0,
+                explanation: "4 × 250 g = 1.000 gram. Karena 1.000 gram = 1 kg, maka total beratnya adalah 1 kg."
+            },
+            {
+                q: "9. Pak Tani memanen 2 pon kentang dari kebunnya. Berapa gram berat kentang tersebut? (Ingat: 1 pon = 500 gram)",
+                options: ["200 gram", "500 gram", "1.000 gram", "2.000 gram"],
+                correct: 2,
+                explanation: "1 pon = 500 gram. Maka 2 pon = 2 × 500 g = 1.000 gram."
+            },
+            {
+                q: "10. Ayah menyambung dua buah tali. Tali A panjangnya 2 m dan Tali B panjangnya 150 cm. Berapa sentimeter (cm) total panjang sambungan tali Ayah?",
+                options: ["152 cm", "350 cm", "250 cm", "200 cm"],
+                correct: 1,
+                explanation: "Tali A: 2 m = 200 cm. Tali B = 150 cm. Total = 200 cm + 150 cm = 350 cm."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let userQuizAnswers = new Array(quizData.length).fill(null);
+
+        // INITIALIZATION
+        window.onload = function () {
+            loadSavedUser();
+        };
+
+        function loadSavedUser() {
+            const savedName = localStorage.getItem('siswa_nama');
+            const savedClass = localStorage.getItem('siswa_kelas');
+
+            if (savedName && savedClass) {
+                currentUser.name = savedName;
+                currentUser.class = savedClass;
+                updateUserUI();
+                navigateTo('dashboardView');
+            } else {
+                navigateTo('loginView');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('inputName').value.trim();
+            const classInput = document.getElementById('inputClass').value;
+
+            if (nameInput) {
+                currentUser.name = nameInput;
+                currentUser.class = classInput;
+                localStorage.setItem('siswa_nama', nameInput);
+                localStorage.setItem('siswa_kelas', classInput);
+                updateUserUI();
+                navigateTo('dashboardView');
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+            }
+        }
+
+        function logout() {
+            if (confirm("Apakah kamu yakin ingin keluar / mengganti nama?")) {
+                localStorage.removeItem('siswa_nama');
+                localStorage.removeItem('siswa_kelas');
+                currentUser = { name: '', class: '' };
+                navigateTo('loginView');
+            }
+        }
+
+        function updateUserUI() {
+            document.getElementById('navStudentName').innerText = currentUser.name;
+            document.getElementById('navStudentClass').innerText = currentUser.class;
+            document.getElementById('welcomeText').innerText = `Halo, ${currentUser.name}! 👋`;
+            document.getElementById('resStudentName').innerText = currentUser.name;
+            document.getElementById('resStudentClass').innerText = currentUser.class;
+        }
+
+        // NAVIGATION HANDLER
+        function navigateTo(viewId) {
+            const views = ['loginView', 'dashboardView', 'materiView', 'aktivitasView', 'kuisView', 'hasilView', 'petunjukView', 'tentangView'];
+            
+            views.forEach(v => {
+                const el = document.getElementById(v);
+                if (el) el.classList.add('hidden');
+            });
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const nav = document.getElementById('mainNav');
+            if (viewId === 'loginView') {
+                nav.classList.add('hidden');
+            } else {
+                nav.classList.remove('hidden');
+            }
+
+            if (viewId === 'kuisView') {
+                loadQuizQuestion();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // MATERI TABS LOGIC
+        function switchMateriTab(tabId) {
+            document.querySelectorAll('.materi-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.materi-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-sky-500', 'text-white', 'shadow-md');
+                btn.classList.add('bg-white', 'text-slate-600');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn' + tabId.charAt(0).toUpperCase() + tabId.slice(1));
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-slate-600');
+                activeBtn.classList.add('bg-sky-500', 'text-white', 'shadow-md');
+            }
+        }
+
+        // AKTIVITAS TABS LOGIC
+        function switchActTab(actId) {
+            document.querySelectorAll('.act-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.act-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500', 'text-white', 'shadow-md');
+                btn.classList.add('bg-white', 'text-slate-600');
+            });
+
+            document.getElementById(actId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn' + actId.charAt(0).toUpperCase() + actId.slice(1));
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-slate-600');
+                activeBtn.classList.add('bg-emerald-500', 'text-white', 'shadow-md');
+            }
+        }
+
+        // AKTIVITAS 1: CLICK / CATEGORIZE
+        let selectedDragItem = null;
+        function selectDragItem(el, category) {
+            document.querySelectorAll('.draggable-item').forEach(btn => btn.classList.remove('ring-4', 'ring-amber-400'));
+            selectedDragItem = { element: el, cat: category, text: el.innerText };
+            el.classList.add('ring-4', 'ring-amber-400');
+        }
+
+        function dropToBasket(targetCategory) {
+            if (!selectedDragItem) {
+                showFeedback('act1Feedback', '⚠️ Klik dulu salah satu benda di atas!', 'bg-amber-100 text-amber-800');
+                return;
+            }
+
+            if (selectedDragItem.cat === targetCategory) {
+                const targetContainer = targetCategory === 'panjang' ? document.getElementById('basketPanjangItems') : document.getElementById('basketBeratItems');
+                const tag = document.createElement('span');
+                tag.className = "bg-white text-slate-800 px-3 py-1 rounded-xl text-xs font-bold border border-slate-300 shadow-sm";
+                tag.innerText = selectedDragItem.text;
+                targetContainer.appendChild(tag);
+
+                selectedDragItem.element.remove();
+                selectedDragItem = null;
+                showFeedback('act1Feedback', '🎉 Hore! Jawabanmu Tepat Sekali!', 'bg-emerald-100 text-emerald-800');
+                updateProgress(10);
+            } else {
+                showFeedback('act1Feedback', '❌ Coba perhatikan lagi ciri benda tersebut!', 'bg-rose-100 text-rose-800');
+            }
+        }
+
+        // AKTIVITAS 2: MATCHING
+        let matchLeftVal = null;
+        let matchLeftBtn = null;
+
+        function selectMatchLeft(btn, val) {
+            document.querySelectorAll('.match-left').forEach(b => b.classList.remove('ring-4', 'ring-amber-400'));
+            matchLeftVal = val;
+            matchLeftBtn = btn;
+            btn.classList.add('ring-4', 'ring-amber-400');
+        }
+
+        function selectMatchRight(btn, val) {
+            if (!matchLeftVal) {
+                showFeedback('act2Feedback', '⚠️ Klik pilihan di sebelah Kiri dulu!', 'bg-amber-100 text-amber-800');
+                return;
+            }
+
+            if (matchLeftVal === val) {
+                matchLeftBtn.classList.add('bg-emerald-200', 'pointer-events-none');
+                btn.classList.add('bg-emerald-200', 'pointer-events-none');
+                showFeedback('act2Feedback', '🎉 Pasangan Sangat Tepat!', 'bg-emerald-100 text-emerald-800');
+                matchLeftVal = null;
+                matchLeftBtn = null;
+                updateProgress(10);
+            } else {
+                showFeedback('act2Feedback', '❌ Nilai konversi belum sesuai, coba lagi!', 'bg-rose-100 text-rose-800');
+            }
+        }
+
+        // AKTIVITAS 3, 4, 5
+        function checkAct3(ans, btn) {
+            if (ans === '6 cm') {
+                showFeedback('act3Feedback', '🎉 Benar! Panjang pensil adalah 6 cm.', 'bg-emerald-100 text-emerald-800');
+                updateProgress(10);
+            } else {
+                showFeedback('act3Feedback', '❌ Belum tepat, lihat ujung pensil sejajar angka berapa.', 'bg-rose-100 text-rose-800');
+            }
+        }
+
+        function checkAct4(ans, btn) {
+            if (ans === '3.500 gram') {
+                showFeedback('act4Feedback', '🎉 Tepat! 3 kg = 3.000 g + 500 g = 3.500 gram.', 'bg-emerald-100 text-emerald-800');
+                updateProgress(10);
+            } else {
+                showFeedback('act4Feedback', '❌ Ubah dulu 3 kg menjadi gram (3.000 g)!', 'bg-rose-100 text-rose-800');
+            }
+        }
+
+        function checkAct5(isCorrect, btn) {
+            if (isCorrect) {
+                showFeedback('act5Feedback', '🎉 Alasanmu Cerdas! Meteran saku lebih praktis untuk meja.', 'bg-emerald-100 text-emerald-800');
+                updateProgress(10);
+            } else {
+                showFeedback('act5Feedback', '❌ Penggaris 30 cm terlalu pendek untuk meja yang panjang.', 'bg-rose-100 text-rose-800');
+            }
+        }
+
+        function showFeedback(id, text, bgClass) {
+            const el = document.getElementById(id);
+            el.className = `mt-4 p-3 rounded-2xl font-bold text-center text-sm ${bgClass}`;
+            el.innerText = text;
+            el.classList.remove('hidden');
+        }
+
+        function updateProgress(amount) {
+            userProgress = Math.min(100, userProgress + amount);
+            document.getElementById('progressBar').style.width = userProgress + '%';
+            document.getElementById('progressPercentageText').innerText = userProgress + '%';
+        }
+
+        // QUIZ SYSTEM LOGIC
+        function loadQuizQuestion() {
+            const q = quizData[currentQuizIndex];
+            document.getElementById('quizQuestionBadge').innerText = `Soal ${currentQuizIndex + 1} / ${quizData.length}`;
+            document.getElementById('quizQuestionText').innerText = q.q;
+
+            const optsContainer = document.getElementById('quizOptionsContainer');
+            optsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                const isSelected = userQuizAnswers[currentQuizIndex] === idx;
+                btn.className = `w-full text-left p-4 rounded-2xl border-2 font-bold text-sm transition flex items-center justify-between ${
+                    isSelected ? 'bg-purple-100 border-purple-500 text-purple-900 shadow-md' : 'bg-slate-50 border-slate-200 hover:bg-purple-50 text-slate-700'
+                }`;
+                btn.innerHTML = `
+                    <span>${String.fromCharCode(65 + idx)}. ${opt}</span>
+                    ${isSelected ? '<i class="fa-solid fa-circle-check text-purple-600 text-lg"></i>' : ''}
+                `;
+                btn.onclick = () => selectQuizAnswer(idx);
+                optsContainer.appendChild(btn);
+            });
+
+            // Toggle prev/next buttons
+            document.getElementById('btnPrevQuiz').style.visibility = currentQuizIndex === 0 ? 'hidden' : 'visible';
+            document.getElementById('btnNextQuiz').innerText = currentQuizIndex === quizData.length - 1 ? 'Selesai & Lihat Hasil 🏆' : 'Berikutnya ➡️';
+        }
+
+        function selectQuizAnswer(optionIdx) {
+            userQuizAnswers[currentQuizIndex] = optionIdx;
+            loadQuizQuestion();
+        }
+
+        function prevQuizQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                loadQuizQuestion();
+            }
+        }
+
+        function nextQuizQuestion() {
+            if (userQuizAnswers[currentQuizIndex] === null) {
+                alert('Pilih salah satu jawaban terlebih dahulu ya!');
+                return;
+            }
+
+            if (currentQuizIndex < quizData.length - 1) {
+                currentQuizIndex++;
+                loadQuizQuestion();
+            } else {
+                calculateQuizResult();
+            }
+        }
+
+        function calculateQuizResult() {
+            let correctCount = 0;
+            quizData.forEach((q, idx) => {
+                if (userQuizAnswers[idx] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const score = Math.round((correctCount / quizData.length) * 100);
+
+            document.getElementById('resultScore').innerText = score;
+            document.getElementById('resCorrectCount').innerText = `${correctCount} / ${quizData.length}`;
+
+            let stars = "⭐";
+            let statusText = "Perlu Latihan Lagi 💪";
+            if (score >= 80) {
+                stars = "⭐⭐⭐";
+                statusText = "Sangat Baik / Sangat Cerdas! 🎉";
+            } else if (score >= 60) {
+                stars = "⭐⭐";
+                statusText = "Baik! Pertahankan 👍";
+            }
+
+            document.getElementById('resultStars').innerText = stars;
+            document.getElementById('resStatus').innerText = statusText;
+
+            // Save to localStorage
+            localStorage.setItem('kuis_skor', score);
+
+            buildDiscussionHTML();
+            navigateTo('hasilView');
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+
+        function buildDiscussionHTML() {
+            const container = document.getElementById('discussionContent');
+            container.innerHTML = '';
+
+            quizData.forEach((q, idx) => {
+                const userAns = userQuizAnswers[idx];
+                const isCorrect = userAns === q.correct;
+
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-2xl border-2 ${isCorrect ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300'}`;
+                item.innerHTML = `
+                    <p class="font-bold text-slate-800 text-sm mb-1">${q.q}</p>
+                    <p class="text-xs font-bold ${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">
+                        Jawabanmu: ${userAns !== null ? q.options[userAns] : 'Tidak dijawab'} ${isCorrect ? '✓' : '✗'}
+                    </p>
+                    ${!isCorrect ? `<p class="text-xs font-bold text-emerald-700">Jawaban Benar: ${q.options[q.correct]}</p>` : ''}
+                    <p class="text-xs text-slate-600 mt-2 bg-white p-2 rounded-xl border border-slate-200">💡 <b>Pembahasan:</b> ${q.explanation}</p>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleDiscussionModal() {
+            const modal = document.getElementById('discussionModal');
+            modal.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
